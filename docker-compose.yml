@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: sobrevidas-postgres
+    environment:
+      POSTGRES_DB: pacientesdb
+      POSTGRES_USER: sobrevidas
+      POSTGRES_PASSWORD: sobrevidas123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
