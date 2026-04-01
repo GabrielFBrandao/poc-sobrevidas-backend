@@ -12,7 +12,7 @@ API REST para gerenciamento de pacientes, desenvolvida com Java 17 + Spring Boot
 - Lombok
 - OpenCSV
 
-## ▶Como rodar
+## Como rodar
 
 ### Pré-requisitos
 - Java 17+
