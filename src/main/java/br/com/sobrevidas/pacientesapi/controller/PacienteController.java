@@ -4,6 +4,8 @@
 package br.com.sobrevidas.pacientesapi.controller;
 
 import br.com.sobrevidas.pacientesapi.model.Paciente;
+import br.com.sobrevidas.pacientesapi.request.PacientePostRequestBody;
+import br.com.sobrevidas.pacientesapi.request.PacientePutRequestBody;
 import br.com.sobrevidas.pacientesapi.service.PacienteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -57,15 +59,15 @@ public class PacienteController {
 
     // POST /pacientes → cria novo paciente
     @PostMapping
-    public ResponseEntity<Paciente> criar(@RequestBody Paciente paciente) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(paciente));
+    public ResponseEntity<Paciente> criar(@RequestBody PacientePostRequestBody body) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(body));
     }
 
     // PUT /pacientes/{id} → atualiza paciente completo
     @PutMapping("/{id}")
     public ResponseEntity<Paciente> atualizar(@PathVariable Long id,
-                                               @RequestBody Paciente paciente) {
-        return service.atualizar(id, paciente)
+                                               @RequestBody PacientePutRequestBody body) {
+        return service.atualizar(id, body)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

@@ -2,6 +2,8 @@ package br.com.sobrevidas.pacientesapi.controller;
 
 import br.com.sobrevidas.pacientesapi.model.Paciente;
 import br.com.sobrevidas.pacientesapi.repository.PacienteRepository;
+import br.com.sobrevidas.pacientesapi.request.PacientePostRequestBody;
+import br.com.sobrevidas.pacientesapi.request.PacientePutRequestBody;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,20 +68,18 @@ class PacienteControllerIntegrationTest {
 
     @Test
     void deveCriarPacienteComSucesso() throws Exception {
-        Paciente novo = Paciente.builder()
-                .id(999L)
-                .nome("Paciente Integração")
-                .cpf("12345678900")
-                .sexo("MASCULINO")
-                .cidade("Goiânia")
-                .estado("GO")
-                .participaSmartMonitor(true)
-                .build();
+        PacientePostRequestBody body = new PacientePostRequestBody();
+        body.setNome("Paciente Integração");
+        body.setCpf("12345678900");
+        body.setSexo("MASCULINO");
+        body.setCidade("Goiânia");
+        body.setEstado("GO");
+        body.setParticipaSmartMonitor(true);
 
         mockMvc.perform(post("/pacientes")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novo)))
+                .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value("Paciente Integração"))
                 .andExpect(jsonPath("$.cidade").value("Goiânia"));
@@ -114,14 +114,15 @@ class PacienteControllerIntegrationTest {
                 .id(2L).nome("Nome Antigo")
                 .cpf("11122233344").build());
 
-        Paciente atualizado = Paciente.builder()
-                .id(2L).nome("Nome Atualizado")
-                .cpf("11122233344").cidade("Goiânia").build();
+        PacientePutRequestBody body = new PacientePutRequestBody();
+        body.setNome("Nome Atualizado");
+        body.setCpf("11122233344");
+        body.setCidade("Goiânia");
 
         mockMvc.perform(put("/pacientes/2")
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(atualizado)))
+                .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome").value("Nome Atualizado"));
     }

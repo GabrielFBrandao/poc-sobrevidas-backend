@@ -1,10 +1,10 @@
-// Camada de Regra de Negócio - contém a lógica de negócio principal, validações complexas e orquestra o fluxo
-//de dados entre o controlador e o repositório.
-
 package br.com.sobrevidas.pacientesapi.service;
 
+import br.com.sobrevidas.pacientesapi.mapper.PacienteMapper;
 import br.com.sobrevidas.pacientesapi.model.Paciente;
 import br.com.sobrevidas.pacientesapi.repository.PacienteRepository;
+import br.com.sobrevidas.pacientesapi.request.PacientePostRequestBody;
+import br.com.sobrevidas.pacientesapi.request.PacientePutRequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +16,7 @@ import java.util.Optional;
 public class PacienteService {
 
     private final PacienteRepository repository;
+    private final PacienteMapper mapper;
 
     public List<Paciente> listarTodos() {
         return repository.findAll();
@@ -53,32 +54,14 @@ public class PacienteService {
         return repository.findByTemLesaoSuspeita(temLesaoSuspeita);
     }
 
-    public Paciente criar(Paciente paciente) {
+    public Paciente criar(PacientePostRequestBody body) {
+        Paciente paciente = mapper.toEntity(body);
         return repository.save(paciente);
     }
 
-    public Optional<Paciente> atualizar(Long id, Paciente dadosNovos) {
+    public Optional<Paciente> atualizar(Long id, PacientePutRequestBody body) {
         return repository.findById(id).map(paciente -> {
-            paciente.setNome(dadosNovos.getNome());
-            paciente.setCpf(dadosNovos.getCpf());
-            paciente.setDataNascimento(dadosNovos.getDataNascimento());
-            paciente.setSexo(dadosNovos.getSexo());
-            paciente.setEmail(dadosNovos.getEmail());
-            paciente.setTelefoneCelular(dadosNovos.getTelefoneCelular());
-            paciente.setTelefoneResponsavel(dadosNovos.getTelefoneResponsavel());
-            paciente.setNomeMae(dadosNovos.getNomeMae());
-            paciente.setNumCartaoSus(dadosNovos.getNumCartaoSus());
-            paciente.setCep(dadosNovos.getCep());
-            paciente.setEndereco(dadosNovos.getEndereco());
-            paciente.setNumEndereco(dadosNovos.getNumEndereco());
-            paciente.setComplemento(dadosNovos.getComplemento());
-            paciente.setBairro(dadosNovos.getBairro());
-            paciente.setCidade(dadosNovos.getCidade());
-            paciente.setEstado(dadosNovos.getEstado());
-            paciente.setEhTabagista(dadosNovos.getEhTabagista());
-            paciente.setEhEtilista(dadosNovos.getEhEtilista());
-            paciente.setTemLesaoSuspeita(dadosNovos.getTemLesaoSuspeita());
-            paciente.setParticipaSmartMonitor(dadosNovos.getParticipaSmartMonitor());
+            mapper.updateEntity(paciente, body);
             return repository.save(paciente);
         });
     }

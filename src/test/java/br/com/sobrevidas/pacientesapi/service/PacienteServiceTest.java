@@ -1,7 +1,10 @@
 package br.com.sobrevidas.pacientesapi.service;
 
+import br.com.sobrevidas.pacientesapi.mapper.PacienteMapper;
 import br.com.sobrevidas.pacientesapi.model.Paciente;
 import br.com.sobrevidas.pacientesapi.repository.PacienteRepository;
+import br.com.sobrevidas.pacientesapi.request.PacientePostRequestBody;
+import br.com.sobrevidas.pacientesapi.request.PacientePutRequestBody;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,10 +24,15 @@ class PacienteServiceTest {
     @Mock
     private PacienteRepository repository;
 
+    @Mock
+    private PacienteMapper mapper;
+
     @InjectMocks
     private PacienteService service;
 
     private Paciente paciente;
+    private PacientePostRequestBody postBody;
+    private PacientePutRequestBody putBody;
 
     @BeforeEach
     void setUp() {
@@ -40,6 +48,15 @@ class PacienteServiceTest {
                 .temLesaoSuspeita(false)
                 .participaSmartMonitor(true)
                 .build();
+
+        postBody = new PacientePostRequestBody();
+        postBody.setNome("João Silva");
+        postBody.setCpf("12345678900");
+        postBody.setCidade("Goiânia");
+
+        putBody = new PacientePutRequestBody();
+        putBody.setNome("João Atualizado");
+        putBody.setCidade("Brasília");
     }
 
     @Test
@@ -74,12 +91,26 @@ class PacienteServiceTest {
 
     @Test
     void deveCriarPaciente() {
+        when(mapper.toEntity(postBody)).thenReturn(paciente);
         when(repository.save(paciente)).thenReturn(paciente);
 
-        Paciente resultado = service.criar(paciente);
+        Paciente resultado = service.criar(postBody);
 
         assertNotNull(resultado);
         assertEquals("João Silva", resultado.getNome());
+        verify(mapper, times(1)).toEntity(postBody);
+        verify(repository, times(1)).save(paciente);
+    }
+
+    @Test
+    void deveAtualizarPaciente() {
+        when(repository.findById(1L)).thenReturn(Optional.of(paciente));
+        when(repository.save(paciente)).thenReturn(paciente);
+
+        Optional<Paciente> resultado = service.atualizar(1L, putBody);
+
+        assertTrue(resultado.isPresent());
+        verify(mapper, times(1)).updateEntity(paciente, putBody);
         verify(repository, times(1)).save(paciente);
     }
 
