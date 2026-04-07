@@ -88,7 +88,6 @@ class PacienteControllerIntegrationTest {
     @Test
     void deveBuscarPacientePorId() throws Exception {
         Paciente salvo = repository.save(Paciente.builder()
-                .id(1L)
                 .nome("Maria Silva")
                 .cpf("98765432100")
                 .cidade("Brasília")
@@ -110,16 +109,17 @@ class PacienteControllerIntegrationTest {
 
     @Test
     void deveAtualizarPaciente() throws Exception {
-        repository.save(Paciente.builder()
-                .id(2L).nome("Nome Antigo")
-                .cpf("11122233344").build());
+        Paciente salvo = repository.save(Paciente.builder()
+                .nome("Nome Antigo")
+                .cpf("11122233344")
+                .build());
 
         PacientePutRequestBody body = new PacientePutRequestBody();
         body.setNome("Nome Atualizado");
         body.setCpf("11122233344");
         body.setCidade("Goiânia");
 
-        mockMvc.perform(put("/pacientes/2")
+        mockMvc.perform(put("/pacientes/" + salvo.getId())
                 .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(body)))
@@ -129,15 +129,16 @@ class PacienteControllerIntegrationTest {
 
     @Test
     void deveDeletarPaciente() throws Exception {
-        repository.save(Paciente.builder()
-                .id(3L).nome("Para Deletar")
-                .cpf("55566677788").build());
+        Paciente salvo = repository.save(Paciente.builder()
+                .nome("Para Deletar")
+                .cpf("55566677788")
+                .build());
 
-        mockMvc.perform(delete("/pacientes/3")
+        mockMvc.perform(delete("/pacientes/" + salvo.getId())
                 .with(jwt()))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/pacientes/3")
+        mockMvc.perform(get("/pacientes/" + salvo.getId())
                 .with(jwt()))
                 .andExpect(status().isNotFound());
     }
