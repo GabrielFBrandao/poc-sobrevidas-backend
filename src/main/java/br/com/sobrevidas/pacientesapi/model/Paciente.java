@@ -5,6 +5,8 @@ package br.com.sobrevidas.pacientesapi.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
 @Entity
 @Table(name = "pacientes")
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 public class Paciente {
     
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
